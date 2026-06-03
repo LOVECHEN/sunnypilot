@@ -149,7 +149,7 @@ def load_translations(path) -> tuple[dict[str, str], dict[str, list[str]]]:
 class Multilang:
   def __init__(self):
     self._params = Params() if Params is not None else None
-    self._language: str = "en"
+    self._language: str = "zh-CHS"
     self.languages: dict[str, str] = {}
     self.codes: dict[str, str] = {}
     self._translations: dict[str, str] = {}
