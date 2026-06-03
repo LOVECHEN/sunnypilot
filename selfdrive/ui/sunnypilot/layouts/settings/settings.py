@@ -71,7 +71,7 @@ class NavButton(Widget):
     is_selected = self.panel_type == self.parent._current_panel
     text_color = OP.TEXT_SELECTED if is_selected else OP.TEXT_NORMAL
     content_x = rect.x + 90
-    text_size = measure_text_cached(self.parent._font_medium, self.panel_info.name, 65)
+    text_size = measure_text_cached(self.parent._font_medium, tr(self.panel_info.name), 65)
 
     # Draw background if selected
     if is_selected:
@@ -90,7 +90,7 @@ class NavButton(Widget):
       content_x,
       rect.y + (OP.NAV_BTN_HEIGHT - text_size.y) / 2
     )
-    rl.draw_text_ex(self.parent._font_medium, self.panel_info.name, text_pos, 55, 0, text_color)
+    rl.draw_text_ex(self.parent._font_medium, tr(self.panel_info.name), text_pos, 55, 0, text_color)
 
     # Store button rect for click detection
     self.panel_info.button_rect = rect
