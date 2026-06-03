@@ -60,6 +60,10 @@ def manager_init() -> None:
     if default_value is not None and params.get(k) is None:
       params.put(k, default_value, block=True)
 
+  # default to Chinese Simplified
+  if params.get("LanguageSetting") is None:
+    params.put("LanguageSetting", "zh-CHS")
+
   # Create folders needed for msgq
   try:
     os.mkdir(Paths.shm_path())
