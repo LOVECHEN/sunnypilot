@@ -236,20 +236,37 @@ class Updater:
     return b
 
   @property
+  def _resolve_target_branch(self) -> tuple[str, str | None]:
+    """Resolve the effective target branch and its remote commit hash.
+    Falls back to current branch if target_branch doesn't exist on remote."""
+    branch = self.target_branch
+    remote_commit = self.branches[branch]
+    if remote_commit is None:
+      branch = self.get_branch(BASEDIR)
+      remote_commit = self.branches[branch]
+    return branch, remote_commit
+
+  @property
   def update_ready(self) -> bool:
     consistent_file = Path(os.path.join(FINALIZED, ".overlay_consistent"))
     if consistent_file.is_file():
-      hash_mismatch = self.get_commit_hash(BASEDIR) != self.branches[self.target_branch]
-      branch_mismatch = self.get_branch(BASEDIR) != self.target_branch
-      on_target_branch = self.get_branch(FINALIZED) == self.target_branch
+      target_branch, target_commit = self._resolve_target_branch()
+      if target_commit is None:
+        return False
+      hash_mismatch = self.get_commit_hash(BASEDIR) != target_commit
+      branch_mismatch = self.get_branch(BASEDIR) != target_branch
+      on_target_branch = self.get_branch(FINALIZED) == target_branch
       return ((hash_mismatch or branch_mismatch) and on_target_branch)
     return False
 
   @property
   def update_available(self) -> bool:
     if os.path.isdir(OVERLAY_MERGED) and len(self.branches) > 0:
-      hash_mismatch = self.get_commit_hash(OVERLAY_MERGED) != self.branches[self.target_branch]
-      branch_mismatch = self.get_branch(OVERLAY_MERGED) != self.target_branch
+      target_branch, target_commit = self._resolve_target_branch()
+      if target_commit is None:
+        return False
+      hash_mismatch = self.get_commit_hash(OVERLAY_MERGED) != target_commit
+      branch_mismatch = self.get_branch(OVERLAY_MERGED) != target_branch
       return hash_mismatch or branch_mismatch
     return False
 
@@ -352,8 +369,8 @@ class Updater:
 
     cur_branch = self.get_branch(OVERLAY_MERGED)
     cur_commit = self.get_commit_hash(OVERLAY_MERGED)
-    new_branch = self.target_branch
-    new_commit = self.branches[new_branch]
+    new_branch, new_commit = self._resolve_target_branch()
+
     if (cur_branch, cur_commit) != (new_branch, new_commit):
       cloudlog.info(f"update available, {cur_branch} ({str(cur_commit)[:7]}) -> {new_branch} ({str(new_commit)[:7]})")
     else:
