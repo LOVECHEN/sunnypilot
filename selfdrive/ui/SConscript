@@ -11,11 +11,13 @@ output_files = [
   for f in source_files
   if "NotoColor" not in f.name
 ]
-env.Command(
+font_build = env.Command(
   target=output_files,
   source=[generator, source_files],
   action=f"python3 {generator}",
 )
+# 字体图集的字符集由 process.py 从各 app_*.po 抽取,故 po 变更须触发重烘
+env.Depends(font_build, Glob("#selfdrive/ui/translations/*.po"))
 
 
 if GetOption('extras') and arch == "larch64":
