@@ -287,7 +287,7 @@ SConscript([
   'openpilot/selfdrive/ui/SConscript',
 ])
 
-SConscript(['sunnypilot/SConscript'])
+SConscript(['openpilot/sunnypilot/SConscript'])
 
 # Build desktop-only tools
 if GetOption('extras') and arch != "larch64":
