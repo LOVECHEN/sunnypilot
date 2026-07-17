@@ -31,6 +31,8 @@ BUTTON_HEIGHT = 160
 BUTTON_SPACING = 50
 
 OPENPILOT_URL = "https://openpilot.comma.ai"
+# 联网检查用国内可达地址,避免 openpilot.comma.ai 被墙时卡在 "waiting for internet"
+CONNECTIVITY_CHECK_URL = "http://captive.apple.com/hotspot-detect.html"
 USER_AGENT = f"AGNOSSetup-{HARDWARE.get_os_version()}"
 
 INSTALLER_DESTINATION_PATH = "/tmp/installer"
@@ -207,7 +209,7 @@ class Setup(Widget):
     while not self.stop_network_check_thread.is_set():
       if self.state == SetupState.NETWORK_SETUP:
         try:
-          urllib.request.urlopen(OPENPILOT_URL, timeout=2.0)
+          urllib.request.urlopen(CONNECTIVITY_CHECK_URL, timeout=2.0)
           self.network_connected.set()
           if HARDWARE.get_network_type() == NetworkType.wifi:
             self.wifi_connected.set()

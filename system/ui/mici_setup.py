@@ -33,6 +33,8 @@ from openpilot.selfdrive.ui.mici.widgets.button import BigButton, GreyBigButton
 NetworkType = log.DeviceState.NetworkType
 
 OPENPILOT_URL = "https://openpilot.comma.ai"
+# 联网检查用国内可达地址,避免 openpilot.comma.ai 被墙时卡在 "waiting for internet"
+CONNECTIVITY_CHECK_URL = "http://captive.apple.com/hotspot-detect.html"
 USER_AGENT = f"AGNOSSetup-{HARDWARE.get_os_version()}"
 
 INSTALLER_DESTINATION_PATH = "/tmp/installer"
@@ -73,7 +75,7 @@ class NetworkConnectivityMonitor:
     while not self._stop_event.is_set():
       if self._should_check():
         try:
-          request = urllib.request.Request(OPENPILOT_URL, method="HEAD")
+          request = urllib.request.Request(CONNECTIVITY_CHECK_URL, method="HEAD")
           urllib.request.urlopen(request, timeout=2.0)
 
           # Discard stale result if invalidated during request
